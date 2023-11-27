@@ -19,26 +19,8 @@ async function getShowsByTerm(term) {
   {
     q: term
   }})
-  console.log(search.data);
+  // console.log(search.data);
   return search.data;
-  // return [
-  //   {
-  //     id: 1767,
-  //     name: "The Bletchley Circle",
-  //     summary:
-  //       `<p><b>The Bletchley Circle</b> follows the journey of four ordinary
-  //          women with extraordinary skills that helped to end World War II.</p>
-  //        <p>Set in 1952, Susan, Millie, Lucy and Jean have returned to their
-  //          normal lives, modestly setting aside the part they played in
-  //          producing crucial intelligence, which helped the Allies to victory
-  //          and shortened the war. When Susan discovers a hidden code behind an
-  //          unsolved murder she is met by skepticism from the police. She
-  //          quickly realises she can only begin to crack the murders and bring
-  //          the culprit to justice with her former friends.</p>`,
-  //     image:
-  //       "http://static.tvmaze.com/uploads/images/medium_portrait/147/369403.jpg"
-  //   }
-  // ];
 }
 
 
@@ -112,17 +94,32 @@ $searchForm.on("submit", async function (evt) {
  */
 
 async function getEpisodesOfShow(id) {
-  console.log(id);
-  const test = document.querySelector(`div[data-show-id="${id}"]`);
-  console.log(test);
-  
-  test.append();
+  // console.log(id);
+  const showId = document.querySelector(`div[data-show-id="${id}"]`).getAttribute("data-show-id");
+  const newEpi = document.querySelector(`div[data-show-id="${id}"]`);
+
+  const getEpisodes = await axios.get(`http://api.tvmaze.com/shows/${showId}/episodes`);
+  console.log(getEpisodes.data)
+  console.log(newEpi);
+  populateEpisodes(getEpisodes.data, newEpi);
 }
 
 /** Write a clear docstring for this function... */
 
-function populateEpisodes(episodes) { 
-
+function populateEpisodes(episodes, newEpi) {
+  for (let episode of episodes) {
+    const episodeHtml = `
+      <div data-episode-id="${episode.id}" class="episode col-md-12 col-lg-6 mb-4">
+        <div class="media-body">
+          <h5 class="text-primary">${episode.name}</h5>
+          <div><small>${episode.summary}</small></div>
+        </div>
+      </div>
+    `;
+    const newEpi2 = document.createElement('div');
+    newEpi2.innerHTML = episodeHtml
+    newEpi.append(newEpi2);
+  }
 }
 
 
